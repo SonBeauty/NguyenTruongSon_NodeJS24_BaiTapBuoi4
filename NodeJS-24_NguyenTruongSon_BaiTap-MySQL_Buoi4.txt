@@ -1,0 +1,74 @@
+NodeJS-24_NguyenTruongSon_BaiTap-MySQL_Buoi4
+Cau 1: Tao bang
+DROP TABLE users
+
+CREATE TABLE users(
+	user_id INT PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(255),
+	age INT,
+	email VARCHAR(255)
+)
+
+CREATE TABLE photos(
+	photo_id INT PRIMARY KEY AUTO_INCREMENT,
+	image_url VARCHAR(255),
+	us_id INT,
+	FOREIGN KEY (us_id) REFERENCES users(user_id)
+)
+
+CREATE TABLE likes(
+	photo_id INT,
+	user_id INT,
+	FOREIGN KEY (photo_id) REFERENCES photos(photo_id),
+	FOREIGN KEY (user_id) REFERENCES users(user_id)
+)
+
+CREATE TABLE tags(
+	tag_id INT PRIMARY KEY AUTO_INCREMENT,
+	tag_name VARCHAR(255)
+)
+
+CREATE TABLE photo_tags(
+	photo_id INT,
+	tag_id INT,
+	FOREIGN KEY (photo_id) REFERENCES photos(photo_id),
+	FOREIGN KEY (tag_id) REFERENCES tags(tag_id)
+)
+
+CREATE TABLE follows(
+	follower_id INT,
+	followee_id INT,
+	FOREIGN KEY (follower_id) REFERENCES users(user_id)
+
+)
+
+CREATE TABLE comments(
+	comment_id INT,
+	comment_text VARCHAR(255),
+	user_id INT,
+	photo_id INT,
+	FOREIGN KEY (user_id) REFERENCES users(user_id),
+	FOREIGN KEY (photo_id) REFERENCES photos(photo_id)
+)
+
+Cau 2: Bai tap SQL yeu cau
+----tìm 5 người sử dụng ứng dụng lâu nhất-----
+SELECT username
+FROM 
+users
+ORDER BY created_at  LIMIT 5
+
+-----tìm 2 ngày có lượt đăng ký nhiều nhất-----
+SELECT created_at
+FROM users
+GROUP BY created_at
+ ORDER BY COUNT(*) DESC
+ LIMIT 2
+ 
+ 
+ ----- xác định người dùng không hoạt động (người dùng không đăng ảnh) -------
+ SELECT *
+ FROM users
+ LEFT JOIN photos
+  ON photos.user_id = users.id
+  where photos.user_id is null
