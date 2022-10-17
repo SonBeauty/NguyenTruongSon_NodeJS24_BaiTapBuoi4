@@ -1,74 +1,99 @@
-NodeJS-24_NguyenTruongSon_BaiTap-MySQL_Buoi4
-Cau 1: Tao bang
 DROP TABLE users
-
 CREATE TABLE users(
 	user_id INT PRIMARY KEY AUTO_INCREMENT,
 	username VARCHAR(255),
+	createAt TIMESTAMP DEFAULT NOW(),
 	age INT,
 	email VARCHAR(255)
 )
+INSERT INTO users(username,  age, email) VALUES('Son', 19, 'son@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Thuong', '2022-10-5 04:05:03', 19, 'thuong@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Khang', '2022-10-5 03:05:03', 20, 'Khang@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Vinh', '2022-10-5 11:05:03', 21, 'Vinh@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Duyen', '2022-10-6 12:07:03', 17, 'Duyen@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Thao', '2022-10-1 08:05:03', 15, 'Thao@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Chau', '2022-10-2 09:05:03', 15, 'Chau@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Hai', '2022-10-2 09:05:03', 15, 'Chau@gmail.com');
+INSERT INTO users(username, createAt, age, email) VALUES('Hien', '2022-10-2 09:05:03', 15, 'Chau@gmail.com');
 
+
+
+SELECT username, DATE(createAt)
+FROM users
+ORDER BY DATE(createAt) LIMIT 5
+
+SELECT COUNT(user_id), DATE(createAt)
+FROM users
+GROUP BY DATE(createAt)
+ORDER BY COUNT(user_id) DESC LIMIT 2
+
+
+DROP TABLE photos
 CREATE TABLE photos(
 	photo_id INT PRIMARY KEY AUTO_INCREMENT,
 	image_url VARCHAR(255),
 	us_id INT,
-	FOREIGN KEY (us_id) REFERENCES users(user_id)
+	FOREIGN KEY (us_id) REFERENCES users(user_id),
+	create_At TIMESTAMP DEFAULT NOW()
 )
+
+INSERT INTO photos(image_url, us_id) 
+VALUES('image_2', 2),('image_3', 1),('image_1', 3),('image_1', 2),('image_5', 3),('image_1', 5),('image_1', 8),('image_1', 8),('image_1', 2),('image_1', 7),('image_1', 2),('image_1', 7);
+
+SELECT *
+FROM users
+LEFT JOIN photos
+ON photos.us_id = users.user_id
+WHERE photos.us_id is NULL
 
 CREATE TABLE likes(
+	like_id INT PRIMARY KEY AUTO_INCREMENT,
 	photo_id INT,
 	user_id INT,
 	FOREIGN KEY (photo_id) REFERENCES photos(photo_id),
-	FOREIGN KEY (user_id) REFERENCES users(user_id)
-)
-
-CREATE TABLE tags(
-	tag_id INT PRIMARY KEY AUTO_INCREMENT,
-	tag_name VARCHAR(255)
-)
-
-CREATE TABLE photo_tags(
-	photo_id INT,
-	tag_id INT,
-	FOREIGN KEY (photo_id) REFERENCES photos(photo_id),
-	FOREIGN KEY (tag_id) REFERENCES tags(tag_id)
-)
-
-CREATE TABLE follows(
-	follower_id INT,
-	followee_id INT,
-	FOREIGN KEY (follower_id) REFERENCES users(user_id)
-
-)
-
-CREATE TABLE comments(
-	comment_id INT,
-	comment_text VARCHAR(255),
-	user_id INT,
-	photo_id INT,
 	FOREIGN KEY (user_id) REFERENCES users(user_id),
-	FOREIGN KEY (photo_id) REFERENCES photos(photo_id)
+	create_at TIMESTAMP DEFAULT NOW()
 )
+INSERT INTO likes(photo_id, user_id) 
+VALUES(1, 2),(1,2),(1,2),(4,1),( 9,4),( 9,4),( 3,3),( 6,4),( 6,9),( 11,3),( 7,3),( 8,1)
 
-Cau 2: Bai tap SQL yeu cau
-----tìm 5 người sử dụng ứng dụng lâu nhất-----
-SELECT username
-FROM 
-users
-ORDER BY created_at  LIMIT 5
+SELECT COUNT(like_id), photo_id
+FROM likes
+GROUP BY photo_id
 
------tìm 2 ngày có lượt đăng ký nhiều nhất-----
-SELECT created_at
-FROM users
-GROUP BY created_at
- ORDER BY COUNT(*) DESC
- LIMIT 2
- 
- 
- ----- xác định người dùng không hoạt động (người dùng không đăng ảnh) -------
- SELECT *
- FROM users
- LEFT JOIN photos
-  ON photos.user_id = users.id
-  where photos.user_id is null
+SELECT
+    users.username,
+    photos.photo_id,
+    photo_likes.like_count
+
+FROM
+    photos
+    INNER JOIN
+    (
+        SELECT
+            photo_id,
+            COUNT(*) AS like_count
+        FROM
+            likes
+        GROUP BY
+            photo_id
+    ) AS photo_likes
+    INNER JOIN users ON users.user_id = photos.us_id
+
+ORDER BY
+    like_count DESC
+    LIMIT 1
+    
+    
+ SELECT username, AVG(photo_id)
+FROM users JOIN photos ON users.user_id = photos.us_id
+GROUP BY username
+
+
+SELECT COUNT(*) FROM users AS us
+SELECT COUNT(*) FROM photos AS photo
+
+
+SELECT (COUNT(*)
+
+
